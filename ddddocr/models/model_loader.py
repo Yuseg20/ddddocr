@@ -71,6 +71,14 @@ class ModelLoader:
             
             # 设置ONNX运行时日志级别
             onnxruntime.set_default_logger_severity(3)
+
+            """
+            运行出现如下报错时，打开 intra_op_num_threads 和 inter_op_num_threads 设置后，重新安装
+            [E:onnxruntime:Default, env.cc:234 ThreadMain] pthread_setaffinity_np failed for thread: 11677, index: 0, mask: {4, }, error code: 22 error msg: Invalid argument. Specify the number of threads explicitly so the affinity is not set.
+            """
+            # sess_options = onnxruntime.SessionOptions()
+            # sess_options.intra_op_num_threads = 1   # 设置内部操作线程数为1
+            # sess_options.inter_op_num_threads = 1   # 设置操作间线程数为1（如果不需要并行执行多个操作）
             
             # 创建推理会话
             session = onnxruntime.InferenceSession(model_path, providers=self.providers)
