@@ -81,7 +81,16 @@ def create_routes(app: FastAPI, service):
         """执行OCR识别"""
         try:
             if not service.ocr_instance:
-                raise HTTPException(status_code=400, detail="OCR功能未初始化，请先调用 /initialize 接口")
+                # 初始化服务，加载模型
+                initializeResult = service.initialize(InitializeRequest())
+                if type(initializeResult) != dict:
+                    raise HTTPException(status_code=400, detail="OCR功能初始化失败")
+                elif initializeResult.get('message') != '服务初始化成功':
+                    raise HTTPException(status_code=400, detail="OCR功能初始化失败")
+                else:
+                    print(initializeResult.get('message'))
+
+                # raise HTTPException(status_code=400, detail="OCR功能未初始化，请先调用 /initialize 接口")
             
             if "ocr" not in service.enabled_features:
                 raise HTTPException(status_code=400, detail="OCR功能已禁用")
